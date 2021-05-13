@@ -7,7 +7,6 @@ import re
 
 URL = 'https://www.boliga.dk/resultat'
 
-
 def get_number_of_pages():
     req = requests.get(URL)
     soup = bs(req.text, 'html.parser')
@@ -20,7 +19,7 @@ def get_number_of_pages():
 
 def residences_to_csv(residence_list, file_path):
     file = open(file_path, "w")
-    csv_labels = "house_type; house_zip_code; house_rooms; house_square_meters; house_year; house_price"
+    csv_labels = "house_type;house_zip_code;house_rooms;house_square_meters;house_year;house_price"
     file.write(csv_labels + "\n")
     for r in residence_list:
         csv_text = "{house_type};{house_zip_code};{house_rooms};{house_square_meters};{house_year};{house_price};".format(
@@ -33,11 +32,11 @@ def get_all_residences_to_list():
     residence_list = []
 
     #pages = get_number_of_pages()
-    #pages = 2
+    pages = 10
     zip_num_reg = re.compile(r'\d{4}')
     
 
-    for page in range(798,799):
+    for page in range(pages):
         req = requests.get(URL + "?page=" + str(page) + '/')
         soup = bs(req.text, 'html.parser')
         all_houses = soup.find_all("a", {"class": "house-list-item"})
@@ -71,4 +70,4 @@ def get_all_residences_to_list():
     return residence_list
 
 
-residences_to_csv(get_all_residences_to_list(), "../data/residence.csv")
+#residences_to_csv(get_all_residences_to_list(), "../data/residence.csv")
