@@ -43,7 +43,6 @@ def get_all_residences_to_list():
                 if (house_type == "Helårsgrund" or house_type == "Fritidsgrund" or house_type == "Landejendom" or house_type == "Andet") :
                     continue
                 house_price = house.find("div", {"class": "primary-value d-flex justify-content-end"}).getText().split(" ")[-2].split("k")[0]
-                print(house_price)
                 house_rooms = house.find("span", {"class": "text-nowrap"}).getText().split(" ")[1]
                 house_square_meters = house.find_all("span", {"class": "text-nowrap"})[1].getText().split(" m²")[0]
                 house_year = house.find_all("span", {"class": "text-nowrap"})[3].getText()
@@ -58,6 +57,8 @@ def get_all_residences_to_list():
                 pass
 
     return residence_list
+
+    
     
 
 
