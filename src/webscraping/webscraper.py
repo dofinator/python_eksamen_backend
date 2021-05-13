@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup as bs
 import residence
 import pandas as pd
 import re
+import threading
+import time
 
 URL = 'https://www.boliga.dk/resultat'
 
@@ -28,17 +30,18 @@ def residences_to_csv(residence_list, file_path):
     file.close()
 
 
+#Metoden skal ikke længere bruges, da vi henter concurrent nu
 def get_all_residences_to_list():
     residence_list = []
-
     #pages = get_number_of_pages()
     pages = 10
     zip_num_reg = re.compile(r'\d{4}')
     
 
     for page in range(pages):
-        req = requests.get(URL + "?page=" + str(page) + '/')
-        soup = bs(req.text, 'html.parser')
+        response = requests.get(URL + "?page=" + str(page) + '/')
+
+        soup = bs(response.text, 'html.parser')
         all_houses = soup.find_all("a", {"class": "house-list-item"})
 
         for house in all_houses:
@@ -49,8 +52,7 @@ def get_all_residences_to_list():
                 house_price_space = house.find("div", {"class": "primary-value d-flex justify-content-end"}).getText().split(" ")[-2].split("k")[0]
                 house_price = house_price_space.replace(u'\xa0', u' ').split(" ")[0].replace(".","")
             
-                house_rooms = house.find(
-                    "span", {"class": "text-nowrap"}).getText().split(" ")[1]
+                house_rooms = house.find("span", {"class": "text-nowrap"}).getText().split(" ")[1]
                 house_square_meters = house.find_all(
                     "span", {"class": "text-nowrap"})[1].getText().split(" m²")[0]
                 house_year = house.find_all(
@@ -69,5 +71,51 @@ def get_all_residences_to_list():
 
     return residence_list
 
+residence_list = []
 
-#residences_to_csv(get_all_residences_to_list(), "../data/residence.csv")
+def get_residences(page_number):
+    zip_num_reg = re.compile(r'\d{4}')
+    response = requests.get(URL + "?page=" + str(page_number) + '/')
+    if response.status_code == 200:
+        soup = bs(response.text, 'html.parser')
+        all_houses = soup.find_all("a", {"class": "house-list-item"})
+        for house in all_houses:
+            try:
+                house_type = house.find("span", {"class": "text"}).getText()
+                if (house_type == "Helårsgrund" or house_type == "Fritidsgrund" or house_type == "Landejendom" or house_type == "Andet"):
+                    continue
+                house_price_space = house.find("div", {"class": "primary-value d-flex justify-content-end"}).getText().split(" ")[-2].split("k")[0]
+                house_price = house_price_space.replace(u'\xa0', u' ').split(" ")[0].replace(".","")
+                house_rooms = house.find("span", {"class": "text-nowrap"}).getText().split(" ")[1]
+                house_square_meters = house.find_all(
+                    "span", {"class": "text-nowrap"})[1].getText().split(" m²")[0]
+                house_year = house.find_all(
+                    "span", {"class": "text-nowrap"})[3].getText()
+                if(house_year.__contains__('-')):
+                    continue 
+                house_zip_text = house.find_all(
+                    "div", {"class": "secondary-value d-flex flex-wrap"})[0].getText()
+                house_zip_code = zip_num_reg.search(house_zip_text).group()
+                resObj = residence.Residence(
+                    house_type, house_zip_code, house_rooms, house_square_meters, house_year, house_price)
+                residence_list.append(resObj)
+            except:
+                pass
+        
+    
+       
+
+#print(len(get_all_residences_to_list()))
+
+pages = get_number_of_pages()
+def get_residences_concurrent():
+    threads = []
+    for page in range(pages):
+        t = threading.Thread(target=get_residences, args=(page,))
+        threads.append(t)
+        t.start()
+        t.join()
+
+
+get_residences_concurrent()
+residences_to_csv(residence_list, "../data/residence.csv")
