@@ -16,20 +16,20 @@ def get_number_of_pages():
 
     return int(pages)
 
-def residences_to_csv(residence_list):
-    file = open("../data/residence.csv", "w")
-    csv_labels = "house_type; house_price; house_rooms; house_square_meters; house_year; house_zip_code"
+def residences_to_csv(residence_list, file_path):
+    file = open(file_path, "w")
+    csv_labels = "house_type; house_zip_code; house_rooms; house_square_meters; house_year; house_price"
     file.write(csv_labels + "\n")
     for r in residence_list:
-        csv_text = "{house_type}; {house_price}; {house_rooms}; {house_square_meters}; {house_year}; {house_zip_code}; ".format(house_type = r.house_type, house_price = r.house_price, house_rooms = r.house_rooms, house_square_meters = r.house_square_meters, house_year = r.house_year, house_zip_code = r.house_zip_code)
+        csv_text = "{house_type}; {house_zip_code}; {house_rooms}; {house_square_meters}; {house_year}; {house_price}; ".format(house_type = r.house_type, house_price = r.house_price, house_rooms = r.house_rooms, house_square_meters = r.house_square_meters, house_year = r.house_year, house_zip_code = r.house_zip_code)
         file.write(csv_text +"\n")
     file.close()
 
 def get_all_residences_to_list():
     residence_list = []
     
-    pages = get_number_of_pages()
-    
+    #pages = get_number_of_pages()
+    pages = 2
     zip_num_reg = re.compile(r'\d{4}')
 
     for page in range(pages):
@@ -42,7 +42,8 @@ def get_all_residences_to_list():
                 house_type = house.find("span", {"class": "text"}).getText()
                 if (house_type == "Helårsgrund" or house_type == "Fritidsgrund" or house_type == "Landejendom" or house_type == "Andet") :
                     continue
-                house_price = house.find("div", {"class": "primary-value d-flex justify-content-end"}).getText().split("  ")[1].split("k")[0]
+                house_price = house.find("div", {"class": "primary-value d-flex justify-content-end"}).getText().split(" ")[-2].split("k")[0]
+                print(house_price)
                 house_rooms = house.find("span", {"class": "text-nowrap"}).getText().split(" ")[1]
                 house_square_meters = house.find_all("span", {"class": "text-nowrap"})[1].getText().split(" m²")[0]
                 house_year = house.find_all("span", {"class": "text-nowrap"})[3].getText()
@@ -50,17 +51,14 @@ def get_all_residences_to_list():
                     continue
                 house_zip_text = house.find_all("div", {"class": "secondary-value d-flex flex-wrap"})[0].getText()
                 house_zip_code = zip_num_reg.search(house_zip_text).group()
-                print("scraping...")
                 
-                resObj = residence.Residence(house_type, house_price, house_rooms,house_square_meters,house_year, house_zip_code)
+                resObj = residence.Residence(house_type, house_zip_code, house_rooms,house_square_meters,house_year, house_price)
                 residence_list.append(resObj)
             except:
                 pass
 
-    residences_to_csv(residence_list)
+    return residence_list
     
-
-get_all_residences_to_list()
 
 
 

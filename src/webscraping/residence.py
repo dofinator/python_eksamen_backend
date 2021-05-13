@@ -1,5 +1,5 @@
 class Residence:
-    def __init__(self, house_type,  house_price, house_rooms, house_square_meters,  house_year, house_zip_code):
+    def __init__(self, house_type,   house_zip_code, house_rooms, house_square_meters,  house_year, house_price):
         self.house_type = house_type
         self.house_price = house_price
         self.house_rooms = house_rooms
