@@ -74,6 +74,7 @@ def get_all_residences_to_list():
 residence_list = []
 
 def get_residences(page_number):
+   
     zip_num_reg = re.compile(r'\d{4}')
     response = requests.get(URL + "?page=" + str(page_number) + '/')
     if response.status_code == 200:
@@ -107,7 +108,8 @@ def get_residences(page_number):
 
 #print(len(get_all_residences_to_list()))
 
-pages = get_number_of_pages()
+#pages = get_number_of_pages()
+pages = 2
 def get_residences_concurrent():
     threads = []
     for page in range(pages):
