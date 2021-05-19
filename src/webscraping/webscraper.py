@@ -34,7 +34,7 @@ def residences_to_csv(residence_list, file_path):
 def get_all_residences_to_list():
     residence_list = []
     #pages = get_number_of_pages()
-    pages = 10
+    pages = 50
     zip_num_reg = re.compile(r'\d{4}')
     
 
@@ -108,9 +108,10 @@ def get_residences(page_number):
 
 #print(len(get_all_residences_to_list()))
 
-#pages = get_number_of_pages()
-pages = 2
+
+
 def get_residences_concurrent():
+    pages = get_number_of_pages()
     threads = []
     for page in range(pages):
         t = threading.Thread(target=get_residences, args=(page,))
