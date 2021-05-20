@@ -92,11 +92,12 @@ def get_residences(page_number):
                     continue
                 house_price_space = house.find("div", {
                                                "class": "primary-value d-flex justify-content-end"}).getText().split(" ")[-2].split("k")[0]
-                house_price_string = house_price_space.replace(u'\xa0', u' ').split(" ")[
+                house_price = house_price_space.replace(u'\xa0', u' ').split(" ")[
                     0].replace(".", "")
-                n = 2
-                house_price_split = [house_price_string[i:i+n] for i in range(0, len(house_price_string), n)]
-                house_price = house_price_split[0]
+                
+                #n = 2
+                #house_price_split = [house_price_string[i:i+n] for i in range(0, len(house_price_string), n)]
+                #house_price = house_price_split[0]
                 house_rooms = house.find(
                     "span", {"class": "text-nowrap"}).getText().split(" ")[1]
                 house_square_meters = house.find_all(
@@ -119,9 +120,9 @@ def get_residences(page_number):
 
 
 def get_residences_concurrent():
-    pages = get_number_of_pages()
+    #pages = get_number_of_pages()
     threads = []
-    for page in range(pages):
+    for page in range(100):
         t = threading.Thread(target=get_residences, args=(page,))
         threads.append(t)
         t.start()
