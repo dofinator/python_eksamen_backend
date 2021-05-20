@@ -9,6 +9,7 @@ import time
 
 URL = 'https://www.boliga.dk/resultat'
 
+
 def get_number_of_pages():
     req = requests.get(URL)
     soup = bs(req.text, 'html.parser')
@@ -30,13 +31,12 @@ def residences_to_csv(residence_list, file_path):
     file.close()
 
 
-#Metoden skal ikke længere bruges, da vi henter concurrent nu
+# Metoden skal ikke længere bruges, da vi henter concurrent nu
 def get_all_residences_to_list():
     residence_list = []
     #pages = get_number_of_pages()
     pages = 50
     zip_num_reg = re.compile(r'\d{4}')
-    
 
     for page in range(pages):
         response = requests.get(URL + "?page=" + str(page) + '/')
@@ -49,10 +49,13 @@ def get_all_residences_to_list():
                 house_type = house.find("span", {"class": "text"}).getText()
                 if (house_type == "Helårsgrund" or house_type == "Fritidsgrund" or house_type == "Landejendom" or house_type == "Andet"):
                     continue
-                house_price_space = house.find("div", {"class": "primary-value d-flex justify-content-end"}).getText().split(" ")[-2].split("k")[0]
-                house_price = house_price_space.replace(u'\xa0', u' ').split(" ")[0].replace(".","")
-            
-                house_rooms = house.find("span", {"class": "text-nowrap"}).getText().split(" ")[1]
+                house_price_space = house.find("div", {
+                                               "class": "primary-value d-flex justify-content-end"}).getText().split(" ")[-2].split("k")[0]
+                house_price = house_price_space.replace(u'\xa0', u' ').split(" ")[
+                    0].replace(".", "")
+
+                house_rooms = house.find(
+                    "span", {"class": "text-nowrap"}).getText().split(" ")[1]
                 house_square_meters = house.find_all(
                     "span", {"class": "text-nowrap"})[1].getText().split(" m²")[0]
                 house_year = house.find_all(
@@ -71,10 +74,12 @@ def get_all_residences_to_list():
 
     return residence_list
 
+
+
 residence_list = []
 
 def get_residences(page_number):
-   
+
     zip_num_reg = re.compile(r'\d{4}')
     response = requests.get(URL + "?page=" + str(page_number) + '/')
     if response.status_code == 200:
@@ -85,15 +90,21 @@ def get_residences(page_number):
                 house_type = house.find("span", {"class": "text"}).getText()
                 if (house_type == "Helårsgrund" or house_type == "Fritidsgrund" or house_type == "Landejendom" or house_type == "Andet"):
                     continue
-                house_price_space = house.find("div", {"class": "primary-value d-flex justify-content-end"}).getText().split(" ")[-2].split("k")[0]
-                house_price = house_price_space.replace(u'\xa0', u' ').split(" ")[0].replace(".","")
-                house_rooms = house.find("span", {"class": "text-nowrap"}).getText().split(" ")[1]
+                house_price_space = house.find("div", {
+                                               "class": "primary-value d-flex justify-content-end"}).getText().split(" ")[-2].split("k")[0]
+                house_price_string = house_price_space.replace(u'\xa0', u' ').split(" ")[
+                    0].replace(".", "")
+                n = 2
+                house_price_split = [house_price_string[i:i+n] for i in range(0, len(house_price_string), n)]
+                house_price = house_price_split[0]
+                house_rooms = house.find(
+                    "span", {"class": "text-nowrap"}).getText().split(" ")[1]
                 house_square_meters = house.find_all(
                     "span", {"class": "text-nowrap"})[1].getText().split(" m²")[0]
                 house_year = house.find_all(
                     "span", {"class": "text-nowrap"})[3].getText()
                 if(house_year.__contains__('-')):
-                    continue 
+                    continue
                 house_zip_text = house.find_all(
                     "div", {"class": "secondary-value d-flex flex-wrap"})[0].getText()
                 house_zip_code = zip_num_reg.search(house_zip_text).group()
@@ -102,12 +113,9 @@ def get_residences(page_number):
                 residence_list.append(resObj)
             except:
                 pass
-        
-    
-       
 
-#print(len(get_all_residences_to_list()))
 
+# print(len(get_all_residences_to_list()))
 
 
 def get_residences_concurrent():
