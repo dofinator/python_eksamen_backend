@@ -120,9 +120,9 @@ def get_residences(page_number):
 
 
 def get_residences_concurrent():
-    #pages = get_number_of_pages()
+    pages = get_number_of_pages()
     threads = []
-    for page in range(100):
+    for page in range(pages):
         t = threading.Thread(target=get_residences, args=(page,))
         threads.append(t)
         t.start()
