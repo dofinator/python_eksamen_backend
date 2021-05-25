@@ -152,7 +152,7 @@ def get_residences_futures():
     print(start_time) 
     pages = get_number_of_pages()
     with concurrent.futures.ThreadPoolExecutor(max_workers = 10) as executor:
-        future_to_page = {executor.submit(get_residences, page): page for page in range(pages)}
+        future_to_page = {executor.submit(get_residences, page): page for page in range(20)}
         for future in concurrent.futures.as_completed(future_to_page):
             page = future_to_page[future]
             print(page)
