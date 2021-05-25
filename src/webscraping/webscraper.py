@@ -6,6 +6,7 @@ import pandas as pd
 import re
 import threading
 import time
+import concurrent.futures
 
 URL = 'https://www.boliga.dk/resultat'
 
@@ -79,7 +80,7 @@ def get_all_residences_to_list():
 residence_list = []
 
 def get_residences(page_number):
-
+    
     zip_num_reg = re.compile(r'\d{4}')
     response = requests.get(URL + "?page=" + str(page_number) + '/')
     if response.status_code == 200:
@@ -88,15 +89,13 @@ def get_residences(page_number):
         for house in all_houses:
             try:
                 house_type = house.find("span", {"class": "text"}).getText()
-                if (house_type == "Helårsgrund" or house_type == "Fritidsgrund" or house_type == "Landejendom" or house_type == "Andet"):
+                if (house_type == "Helårsgrund" or house_type == "Fritidsgrund" or house_type == "Landejendom" or house_type == "Andet" or house_type == "Fritidshus" or house_type == "Andelsbolig"):
                     continue
                 house_price_space = house.find("div", {
                                                "class": "primary-value d-flex justify-content-end"}).getText().split(" ")[-2].split("k")[0]
-                house_price_string = house_price_space.replace(u'\xa0', u' ').split(" ")[
+                house_price = house_price_space.replace(u'\xa0', u' ').split(" ")[
                     0].replace(".", "")
-                n = 2
-                house_price_split = [house_price_string[i:i+n] for i in range(0, len(house_price_string), n)]
-                house_price = house_price_split[0]
+                print(house_price)
                 house_rooms = house.find(
                     "span", {"class": "text-nowrap"}).getText().split(" ")[1]
                 house_square_meters = house.find_all(
@@ -110,6 +109,7 @@ def get_residences(page_number):
                 house_zip_code = zip_num_reg.search(house_zip_text).group()
                 resObj = residence.Residence(
                     house_type, house_zip_code, house_rooms, house_square_meters, house_year, house_price)
+                
                 residence_list.append(resObj)
             except:
                 pass
@@ -117,16 +117,50 @@ def get_residences(page_number):
 
 # print(len(get_all_residences_to_list()))
 
-
-def get_residences_concurrent():
+def get_residences_sequential():
+    start_time = time.perf_counter()
+    print(start_time) 
     pages = get_number_of_pages()
     threads = []
     for page in range(pages):
+        get_residences(page)
+    end_time = time.perf_counter()
+    execution_time = end_time - start_time
+    print(f'Total execution time: {execution_time} secs')
+
+
+
+def get_residences_concurrent():
+    start_time = time.perf_counter()
+    print(start_time) 
+    pages = get_number_of_pages()
+    threads = []
+    for page in range(150):
         t = threading.Thread(target=get_residences, args=(page,))
         threads.append(t)
         t.start()
         t.join()
+    end_time = time.perf_counter()
+    execution_time = end_time - start_time
+    print(f'Total execution time: {execution_time} secs')
+
+#get_residences_concurrent()
 
 
-get_residences_concurrent()
+def get_residences_futures():
+    start_time = time.perf_counter()
+    print(start_time) 
+    pages = get_number_of_pages()
+    with concurrent.futures.ThreadPoolExecutor(max_workers = 10) as executor:
+        future_to_page = {executor.submit(get_residences, page): page for page in range(pages)}
+        for future in concurrent.futures.as_completed(future_to_page):
+            page = future_to_page[future]
+            print(page)
+    end_time = time.perf_counter()
+    execution_time = end_time - start_time
+    print(f'Total execution time: {execution_time} secs')
+
+
+get_residences_futures()
 residences_to_csv(residence_list, "../data/residence.csv")
+
