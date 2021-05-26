@@ -20,5 +20,3 @@ def make_df_from_input():
     data = [[house_type, house_zip_code, house_rooms, house_square_meters, house_year, house_taxes, house_energy, house_ground_area]]
     df = pd.DataFrame (data, columns = ["house_type", "house_zip_code", "house_rooms", "house_square_meters", "house_year", "house_taxes", "house_energy", "house_ground_area"])
     return df
-
-print(make_df_from_input())

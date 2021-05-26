@@ -1,13 +1,18 @@
 from selenium import webdriver
 import requests
 from bs4 import BeautifulSoup as bs
-import residence
 import pandas as pd
 import re
 import threading
 import time
 import concurrent.futures
-import FileIterator
+import sys
+
+sys.path.insert(0, '/home/jovyan/python_eksamen_backend/src/classes')
+from residence import Residence as residence
+
+sys.path.insert(0, '/home/jovyan/python_eksamen_backend/src/classes')
+from FileIterator import FileWriteIterator as fwi
 
 URL = 'https://www.boliga.dk/resultat'
 
@@ -34,7 +39,7 @@ def residences_to_csv(residence_list, file_path):
 
 def residences_to_csv_iterator(residence_list, file_path):
     csv_labels = "house_type;house_zip_code;house_rooms;house_square_meters;house_year;house_taxes;house_energy;house_ground_area;house_price"
-    iter = FileIterator.FileWriteIterator(residence_list, file_path, csv_labels)
+    iter = fwi(residence_list, file_path, csv_labels)
     for residence in residence_list:
         next(iter)
 
@@ -91,7 +96,7 @@ def get_residences(page_number):
                 if(int(house_ground_area) == 0):
                     continue
                 print(house_ground_area)
-                resObj = residence.Residence(
+                resObj = residence(
                     house_type, house_zip_code, house_rooms, house_square_meters, house_year,house_taxes, house_energy, house_ground_area, house_price)
                 
                 residence_list.append(resObj)
@@ -146,5 +151,5 @@ def get_residences_futures():
 
 
 get_residences_futures()
-residences_to_csv_iterator(residence_list, "../data/residence.csv")
+residences_to_csv_iterator(residence_list, "/home/jovyan/python_eksamen_backend/data/residence.csv")
 
