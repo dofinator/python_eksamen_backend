@@ -67,8 +67,8 @@ def get_residences(page_number):
                     0].replace(".", "")
                 house_rooms = house.find(
                     "span", {"class": "text-nowrap"}).getText().split(" ")[1]
-                house_square_meters = house.find_all(
-                    "span", {"class": "text-nowrap"})[1].getText().split(" m²")[0].split(" ")[1]
+                house_square_meters = int(house.find_all(
+                    "span", {"class": "text-nowrap"})[1].getText().split(" m²")[0].split(" ")[1])
                 house_year_date = house.find_all(
                     "span", {"class": "text-nowrap"})[3].getText()
                 
@@ -94,11 +94,10 @@ def get_residences(page_number):
                     0].replace(".", "")
                 
                 if(int(house_ground_area) == 0):
-                    continue
+                    house_ground_area = house_square_meters
                 print(house_ground_area)
                 resObj = residence(
                     house_type, house_zip_code, house_rooms, house_square_meters, house_year,house_taxes, house_energy, house_ground_area, house_price)
-                
                 residence_list.append(resObj)
             except:
                 pass
@@ -144,7 +143,7 @@ def get_residences_futures():
         future_to_page = {executor.submit(get_residences, page): page for page in range(pages)}
         for future in concurrent.futures.as_completed(future_to_page):
             page = future_to_page[future]
-            print(page)
+            print("sidetal" + page)
     end_time = time.perf_counter()
     execution_time = end_time - start_time
     print(f'Total execution time: {execution_time} secs')
