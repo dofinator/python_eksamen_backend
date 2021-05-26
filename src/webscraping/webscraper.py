@@ -7,6 +7,7 @@ import re
 import threading
 import time
 import concurrent.futures
+import FileIterator
 
 URL = 'https://www.boliga.dk/resultat'
 
@@ -30,6 +31,13 @@ def residences_to_csv(residence_list, file_path):
             house_type=r.house_type, house_price=r.house_price, house_rooms=r.house_rooms, house_square_meters=r.house_square_meters, house_year=r.house_year, house_zip_code=r.house_zip_code, house_taxes=r.house_taxes, house_energy=r.house_energy, house_ground_area=r.house_ground_area)
         file.write(csv_text + "\n")
     file.close()
+
+def residences_to_csv_iterator(residence_list, file_path):
+    csv_labels = "house_type;house_zip_code;house_rooms;house_square_meters;house_year;house_taxes;house_energy;house_ground_area;house_price"
+    iter = FileIterator.FileWriteIterator(residence_list, file_path, csv_labels)
+    for residence in residence_list:
+        next(iter)
+
 
 
 # Metoden skal ikke længere bruges, da vi henter concurrent nu
@@ -128,7 +136,7 @@ def get_residences_futures():
     print(start_time) 
     pages = get_number_of_pages()
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        future_to_page = {executor.submit(get_residences, page): page for page in range(pages)}
+        future_to_page = {executor.submit(get_residences, page): page for page in range(200)}
         for future in concurrent.futures.as_completed(future_to_page):
             page = future_to_page[future]
             print(page)
@@ -138,5 +146,5 @@ def get_residences_futures():
 
 
 get_residences_futures()
-residences_to_csv(residence_list, "../data/residence.csv")
+residences_to_csv_iterator(residence_list, "../data/residence.csv")
 
