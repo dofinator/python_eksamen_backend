@@ -143,12 +143,12 @@ def get_residences_futures():
         future_to_page = {executor.submit(get_residences, page): page for page in range(pages)}
         for future in concurrent.futures.as_completed(future_to_page):
             page = future_to_page[future]
-            print("sidetal" + page)
+            print("sidetal" , page)
     end_time = time.perf_counter()
     execution_time = end_time - start_time
     print(f'Total execution time: {execution_time} secs')
 
 
 get_residences_futures()
-residences_to_csv_iterator(residence_list, "/home/jovyan/python_eksamen_backend/data/residence.csv")
+residences_to_csv_iterator(residence_list, "/home/jovyan/python_eksamen_backend/data/residence2.csv")
 
