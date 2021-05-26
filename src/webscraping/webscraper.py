@@ -67,6 +67,8 @@ def get_residences(page_number):
                     0].replace(".", "")
                 house_rooms = house.find(
                     "span", {"class": "text-nowrap"}).getText().split(" ")[1]
+                if(house_rooms == 0):
+                    continue
                 house_square_meters = int(house.find_all(
                     "span", {"class": "text-nowrap"})[1].getText().split(" m²")[0].split(" ")[1])
                 house_year_date = house.find_all(
@@ -150,5 +152,5 @@ def get_residences_futures():
 
 
 get_residences_futures()
-residences_to_csv_iterator(residence_list, "/home/jovyan/python_eksamen_backend/data/residence2.csv")
+residences_to_csv_iterator(residence_list, "/home/jovyan/python_eksamen_backend/data/residence.csv")
 

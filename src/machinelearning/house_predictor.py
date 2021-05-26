@@ -44,7 +44,7 @@ def train_model (df_residence):
 
     reg = linear_model.LinearRegression()
 
-    x_train, x_test, y_train, y_test = train_test_split(df_x, df_y, test_size=0.20, random_state=0)
+    x_train, x_test, y_train, y_test = train_test_split(df_x, df_y, test_size=0.20, random_state=42)
 
     norm = MinMaxScaler().fit(x_train)
 
