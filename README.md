@@ -21,6 +21,7 @@ The user is prompted in the terminal for input regarding the house they want to 
  - We would have liked to implement a feature where not only the price was predicted, but also where five    similar houses was found in relation to the user house.
  - We would have liked to visualize more data from our dataset
  - We would have liked to test out more machine learning models. 
+ - We would have liked to implement error handling
  
 ### List of Challenges
  - Webscraping
