@@ -1,10 +1,8 @@
-from selenium import webdriver
 import requests
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 import re
 import threading
-import time
 import concurrent.futures
 import sys
 
