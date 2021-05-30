@@ -50,7 +50,7 @@ def train_model (df_residence):
 
     x_train_norm = norm.transform(x_train)
 
-    x_test_norm = norm.transform(x_test)
+    #x_test_norm = norm.transform(x_test)
 
     reg.fit(x_train_norm, y_train)
 
@@ -58,6 +58,6 @@ def train_model (df_residence):
 
     pred = reg.predict(df_residence_norm)
 
-    print(pred)
+    print("Din forventede huspris er: ", pred)
 
 train_model(make_df_from_input())

@@ -18,9 +18,7 @@ def make_df_from_input():
     house_ground_area= int(input("Indtast grundstørrelse, hvis lejlighed, tast 0: "))
     if(house_ground_area == 0):
         house_ground_area = house_square_meters
-    print(house_square_meters)
-    print(house_ground_area)
-
+    
     data = [[house_type, house_zip_code, house_rooms, house_square_meters, house_year, house_taxes, house_energy, house_ground_area]]
     df = pd.DataFrame (data, columns = ["house_type", "house_zip_code", "house_rooms", "house_square_meters", "house_year", "house_taxes", "house_energy", "house_ground_area"])
     return df
